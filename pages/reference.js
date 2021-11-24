@@ -1,20 +1,42 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => ({
+  main: {
+    display: "none",
+    [theme.breakpoints.down("xs")]: {
+      display: "block",
+    },
+    position: "fixed",
+    top: "0px",
+    width: "100%",
+    zIndex: 100,
+  },
+  spacer: {
+    marginBottom: "66px",
+  },
   container: {
     background: "linear-gradient(315deg, #b1bfd8 0%, #667eaa 74%)",
   },
   wrapper: {
-    padding: "20px 40px",
+    padding: "10px 20px",
     display: "flex",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
   },
+
   img: {
-    width: "40px",
+    width: "60px",
+    "&:hover": {
+      cursor: "pointer",
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "40px",
+    },
   },
-  hamburber: {
+  menuButtonInactive: {
     width: "30px",
     height: "3px",
     background: "#fff",
@@ -41,8 +63,11 @@ const useStyles = makeStyles((theme) => ({
       transition: "all 0.5s ease-in-out",
       transform: "translateY(10px)",
     },
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
-  activeHamburger: {
+  menuButtonActive: {
     width: "30px",
     height: "3px",
     borderRadius: "5px",
@@ -69,8 +94,9 @@ const useStyles = makeStyles((theme) => ({
       transition: "all 0.5s ease-in-out",
       transform: "rotate(-45deg) translate(35px, 35px)",
     },
+    cursor: "pointer",
   },
-  sidenav: {
+  inactiveLinksDiv: {
     position: "fixed",
     width: "100%",
     height: "100vh",
@@ -78,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
     transform: "translateX(100%)",
     transition: "all 0.5s ease-in-out",
   },
-  activeSidenav: {
+  activeLinksDiv: {
     position: "fixed",
     width: "100%",
     height: "100vh",
@@ -89,12 +115,19 @@ const useStyles = makeStyles((theme) => ({
   ul: {
     listStyleType: "none",
     "& li": {
-      padding: "20px 0",
+      margin: "20px 0",
+      padding: "10px 0",
     },
   },
   a: {
-    margin: "20px 0",
     color: "white",
+    fontSize: "16px",
+    fontWeight: "500",
+    textTransform: "none",
+    textDecoration: "none",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
 }));
 
@@ -110,34 +143,47 @@ const data = [
     Link: "/events",
   },
 ];
-const index = () => {
+
+const MobileNavbar = () => {
   const classes = useStyles();
+  const router = useRouter();
   const [active, setActive] = useState(false);
   return (
-    <div className={classes.main}>
-      <div className={classes.container}>
-        <div className={classes.wrapper}>
-          <img src="/codeloper1.png" alt="logo" className={classes.img} />
-          <div onClick={() => setActive(!active)}>
-            <div
-              className={active ? classes.activeHamburger : classes.hamburber}
-            />
+    <>
+      <div className={classes.main}>
+        <div className={classes.container}>
+          <div className={classes.wrapper}>
+            <div className={classes.logoDiv}>
+              <Link href="/">
+                <img src="/codeloper1.png" alt="logo" className={classes.img} />
+              </Link>
+            </div>
+            <div onClick={() => setActive(!active)}>
+              <div
+                className={
+                  active ? classes.menuButtonActive : classes.menuButtonInactive
+                }
+              />
+            </div>
           </div>
         </div>
+        <div
+          className={active ? classes.activeLinksDiv : classes.inactiveLinksDiv}
+        >
+          <ul className={classes.ul}>
+            {data.map((item, i) => (
+              <li key={`${i * 4}`} onClick={() => setActive(false)}>
+                <Link href={item.Link}>
+                  <a className={classes.a}>{item.name}</a>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <div className={active ? classes.activeSidenav : classes.sidenav}>
-        <ul className={classes.ul}>
-          {data.map((item, i) => (
-            <li key={i}>
-              <a href="#" className={classes.a}>
-                {item.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+      <div className={classes.spacer} />
+    </>
   );
 };
 
-export default index;
+export default MobileNavbar;
